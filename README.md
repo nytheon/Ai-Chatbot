@@ -2,92 +2,127 @@
 
 # 🤖 AI Chatbot
 
-### Free Online ChatGPT-Like Chatbot — **No API Key. No Signup. No Backend.**
+### A Free, Streaming AI Chatbot for the Terminal
 
-A beautiful, fast, browser-based AI chatbot built with pure **HTML, CSS & JavaScript** that streams live responses from a free keyless OpenAI-compatible API. Works on desktop and mobile, open-source forever.
+A zero-dependency Python CLI chatbot that talks to any **OpenAI-compatible Chat Completions API**. Streams responses word-by-word, remembers conversation context, and works with the free tier of [OpenRouter](https://openrouter.ai) or any endpoint of your choice.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-nytheon.github.io%2FAi--Chatbot-38bdf8?style=for-the-badge&logo=githubpages&logoColor=white)](https://nytheon.github.io/Ai-Chatbot/)
-[![GitHub Stars](https://img.shields.io/github/stars/nytheon/Ai-Chatbot?style=for-the-badge&logo=github&color=yellow)](https://github.com/nytheon/Ai-Chatbot/stargazers)
-[![GitHub License](https://img.shields.io/github/license/nytheon/Ai-Chatbot?style=for-the-badge&logo=mit&color=brightgreen)](https://github.com/nytheon/Ai-Chatbot/blob/main/LICENSE)
-[![HTML](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](#)
-[![CSS](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](#)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](#)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](#)
+[![License](https://img.shields.io/badge/License-MIT-brightgreen?style=for-the-badge&logo=mit&logoColor=white)](#)
+[![Endpoint](https://img.shields.io/badge/OpenAI-Compatible-5C2D91?style=for-the-badge&logo=openai&logoColor=white)](#)
 
 </div>
 
 ---
 
-## ✨ Why You'll Love It
+## ✨ Features
 
-- 🆓 **100% Free** — no API key, no credit card, no account, no signup ever
-- ⚡ **Streaming replies** — responses appear word-by-word like ChatGPT
-- 🧠 **Real language model** — powered by a keyless OpenAI-compatible endpoint
-- 🎨 **Glassmorphism UI** — modern frosted-glass dark theme that looks great anywhere
-- 📱 **Fully responsive** — works beautifully on desktop, tablet, and phone
-- ⚙️ **Configurable** — change the API URL, model, and system prompt right from the UI
-- 🔒 **Private** — your chat never touches a server you didn't configure
-- 🧹 **Clean code** — a simple, well-commented vanilla HTML/CSS/JS codebase anyone can learn from
+- ⚡ **Streaming replies** — responses appear live, word-by-word
+- 🧠 **Free by default** — works with OpenRouter's free models
+- 🔀 **Automatic failover** — tries fallback endpoints if the first is busy
+- 💬 **Interactive chat** — with `/new`, `/system`, `/help`, `/quit`
+- 📖 **Context-aware** — remembers the last 24 messages of conversation
+- 🔑 **Bring your own key/endpoint** — OpenAI, OpenRouter, or any compatible API
+- 🐍 **Zero dependencies** — only Python 3.10+ and `requests`
 
 ---
 
 ## 🚀 Quick Start
 
-**Option 1 — Use it instantly:** open the [live demo](https://nytheon.github.io/Ai-Chatbot/) and start chatting.
+### 1. Get a free API key (one-time)
 
-**Option 2 — Run it locally:**
+1. Create a free account at [openrouter.ai](https://openrouter.ai)
+2. Go to **Keys** and create a key
+3. Set it as an environment variable:
+
+   ```bash
+   # Windows (PowerShell)
+   $env:OPENROUTER_API_KEY = "sk-or-..."
+
+   # macOS / Linux
+   export OPENROUTER_API_KEY="sk-or-..."
+   ```
+
+### 2. Run
 
 ```bash
-git clone https://github.com/nytheon/Ai-Chatbot.git
-cd Ai-Chatbot
-# just open index.html in your browser, or serve it:
-python -m http.server 8000
+pip install requests
+python chatbot.py
 ```
 
-**Option 3 — Deploy to GitHub Pages:**
+That's it. Start chatting — the bot will ask you questions, answer yours, and remember context between messages.
 
-1. Fork this repository
-2. In your fork go to **Settings → Pages**
-3. Set the source to **Deploy from a branch → main → / (root)**
-4. Your chatbot is live at `https://<your-username>.github.io/Ai-Chatbot/`
+---
+
+## 📖 Usage
+
+### Interactive chat
+
+```bash
+python chatbot.py
+```
+
+| Command | Action |
+| --- | --- |
+| `/new` | Clear the conversation history |
+| `/system <prompt>` | Set a new system prompt |
+| `/help` | Show the in-chat help |
+| `/quit` | Exit |
+
+### Single question
+
+```bash
+python chatbot.py --once "What is a hash function?"
+```
+
+### Command-line options
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `--api-url` | `https://openrouter.ai/api/v1/chat/completions` | OpenAI-compatible endpoint |
+| `--model` | `meta-llama/llama-3.3-70b-instruct:free` | Model name |
+| `--system-prompt` | Built-in assistant prompt | How the bot behaves |
+| `--api-key` | `OPENROUTER_API_KEY` or `OPENAI_API_KEY` env var | Bearer token (optional) |
+| `--once` | — | Ask a single question, then exit |
+
+### Custom endpoints
+
+Any OpenAI-compatible API works. Examples:
+
+```bash
+# OpenAI
+python chatbot.py --api-url https://api.openai.com/v1/chat/completions \
+                  --model gpt-4o-mini \
+                  --api-key sk-your-key
+
+# A local server (e.g. llama.cpp, vLLM, Ollama with OpenAI-compat)
+python chatbot.py --api-url http://localhost:8000/v1/chat/completions \
+                  --model llama-3.1
+```
 
 ---
 
 ## 🛠️ How It Works
 
-The app is a single-page frontend (no build step, no dependencies) that calls an OpenAI-compatible **Chat Completions** API:
+The bot sends the conversation as a Chat Completions request with `stream: true`:
 
-```
-POST https://text.pollinations.ai/openai/v1/chat/completions
+```bash
+POST {api-url}
+Authorization: Bearer {api-key}
 Content-Type: application/json
 ```
 
 ```json
 {
-  "model": "openai",
+  "model": "meta-llama/llama-3.3-70b-instruct:free",
   "messages": [
     { "role": "system", "content": "You are a friendly, capable AI assistant." },
     { "role": "user", "content": "Hello!" }
   ],
-  "stream": true,
-  "private": true
+  "stream": true
 }
 ```
 
-Because the endpoint needs **no API key**, the request can be made directly from the browser. Your conversation history is kept in memory, and the last 12 messages are sent with each request so the bot remembers context.
-
-> **Bring your own endpoint:** open **Settings** (⚙️) in the app and point it at any OpenAI-compatible API URL and model. No code changes needed.
-
----
-
-## ⚙️ Settings
-
-| Setting | Default | Purpose |
-| --- | --- | --- |
-| API URL | `https://text.pollinations.ai/openai/v1/chat/completions` | OpenAI-compatible endpoint |
-| Model | `openai` | Model name sent to the endpoint |
-| System prompt | Built-in assistant prompt | How the bot behaves |
-
-All settings are saved to your browser's `localStorage`.
+Responses are parsed from the SSE (`text/event-stream`) stream and printed live. If the primary endpoint fails with a transient error (429, 500, 502, 503, 504), the bot retries with exponential backoff, then falls back to alternative endpoints. The last 24 messages are kept as context.
 
 ---
 
@@ -95,41 +130,20 @@ All settings are saved to your browser's `localStorage`.
 
 ```
 Ai-Chatbot/
-├── index.html   # page structure
-├── style.css    # glassmorphism styling
-├── script.js    # chat logic, streaming, settings
+├── chatbot.py   # the entire chatbot — CLI, streaming, retries
+├── README.md    # you are here
 └── LICENSE      # MIT license
 ```
 
 ---
 
-## 🧰 Technologies
-
-- **HTML5** — semantic markup
-- **CSS3** — custom properties, grid/flexbox, backdrop-filter glassmorphism, responsive breakpoints
-- **JavaScript** — async/await, `fetch` streaming via the Fetch API `ReadableStream`, DOM manipulation, `localStorage`
-
----
-
-## 📸 Features Preview
-
-- Typing indicator animation
-- Markdown-rendered bot replies (bold, lists, code blocks, links)
-- One-click **Copy** button on every bot reply
-- Quick suggestion chips to start conversations
-- **New chat** button to reset context
-- Configurable model + API URL + system prompt
-- Graceful error handling when the free endpoint is busy
-
----
-
 ## 🤝 Contributing
 
-Contributions are very welcome! Open an issue or submit a pull request. If you like this project, please give it a ⭐ — it helps more people find a free AI chatbot.
+Contributions are welcome! Open an issue or submit a pull request.
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+Licensed under the [MIT License](LICENSE).
 
 ---
 

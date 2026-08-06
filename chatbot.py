@@ -3,9 +3,8 @@
 AI Chatbot - Python CLI version.
 
 A free, streaming AI chatbot that talks to any OpenAI-compatible
-Chat Completions API. No API key required when using the default
-keyless endpoint (pollinations.ai); bring your own endpoint/key for
-production use.
+Chat Completions API. Uses the free OpenRouter tier by default;
+bring your own endpoint/key for production use.
 
 Usage:
     python chatbot.py                     # start interactive chat
